@@ -4,6 +4,8 @@ from dotenv import find_dotenv
 from pydantic import Field, PrivateAttr, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+APP_NAME = "pocket"
+
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_prefix="POCKET_", extra="ignore")
