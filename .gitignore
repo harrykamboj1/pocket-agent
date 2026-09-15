@@ -9,3 +9,8 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .DS_Store
+
+# Local build and learning notes
+BUILD_PLAN.md
+LEARNING_ROADMAP.md
+LEARNING_PROGRESS.md
