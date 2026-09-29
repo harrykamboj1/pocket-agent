@@ -1,7 +1,7 @@
 import sqlite3
-from pathlib import Path
 from collections.abc import Iterator
 from contextlib import contextmanager
+from pathlib import Path
 
 BUSY_TIMEOUT_MS = 5_000  # 5 seconds
 

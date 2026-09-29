@@ -1,18 +1,16 @@
+import json
 import sqlite3
 import sys
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import StrEnum
 from pathlib import Path
-
-from pocket.db.connect import connect_database
-from pocket.db.migrate import migrate_database
-from pocket.paths import PocketPaths, initialize_paths, derive_paths
-
-import json
 from urllib.request import urlopen
 
 from pocket.config import Settings
+from pocket.db.connect import connect_database
+from pocket.db.migrate import migrate_database
+from pocket.paths import PocketPaths, derive_paths, initialize_paths
 
 MINIMUM_PYTHON = (3, 11)
 OLLAMA_VERSION_URL = "http://127.0.0.1:11434/api/version"
@@ -124,7 +122,7 @@ def check_fts5(
             status=HealthStatus.FAIL,
             message=f"SQLite FTS5 is unavailable: {error}",
             remediation=(
-                "Install a Python build linked against SQLite " "with FTS5 support."
+                "Install a Python build linked against SQLite with FTS5 support."
             ),
         )
     finally:
@@ -266,7 +264,7 @@ def check_provider_configuration(
             name="provider",
             status=HealthStatus.FAIL,
             message=(
-                f"Provider {provider!r} requires an API key, " "but none is configured."
+                f"Provider {provider!r} requires an API key, but none is configured."
             ),
             remediation="Set POCKET_API_KEY.",
         )
@@ -274,7 +272,7 @@ def check_provider_configuration(
     return HealthCheck(
         name="provider",
         status=HealthStatus.PASS,
-        message=(f"Provider {provider!r} is configured " f"with model {model!r}."),
+        message=(f"Provider {provider!r} is configured with model {model!r}."),
     )
 
 
@@ -379,7 +377,7 @@ def check_embedder() -> HealthCheck:
             "lexical FTS5 search remains available."
         ),
         remediation=(
-            "Continue with lexical search until an embedding " "provider is configured."
+            "Continue with lexical search until an embedding provider is configured."
         ),
     )
 
@@ -391,10 +389,9 @@ def check_sandbox() -> HealthCheck:
         name="sandbox",
         status=HealthStatus.WARN,
         message=(
-            "Sandbox execution is not implemented yet; "
-            "code execution is unavailable."
+            "Sandbox execution is not implemented yet; code execution is unavailable."
         ),
         remediation=(
-            "Continue without code execution until a sandbox " "backend is configured."
+            "Continue without code execution until a sandbox backend is configured."
         ),
     )

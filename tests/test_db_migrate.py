@@ -1,7 +1,10 @@
 import sqlite3
+from collections.abc import Iterator
 from pathlib import Path
 
 import pytest
+
+from pocket.db.connect import connect_database
 from pocket.db.migrate import (
     Migration,
     apply_migration,
@@ -9,10 +12,7 @@ from pocket.db.migrate import (
     current_schema_version,
     migrate_database,
 )
-
-from pocket.db.connect import connect_database
 from pocket.paths import derive_paths, initialize_paths
-from collections.abc import Iterator
 
 EXPECTED_TABLES = {
     "sessions",
@@ -68,7 +68,7 @@ def test_apply_schema_creates_expected_tables(tmp_path: Path) -> None:
     try:
         apply_schema(connection)
 
-        assert EXPECTED_TABLES <= table_names(connection)
+        assert table_names(connection) >= EXPECTED_TABLES
         assert connection.execute("PRAGMA foreign_key_check").fetchall() == []
     finally:
         connection.close()
@@ -82,7 +82,7 @@ def test_apply_schema_is_idempotent(tmp_path: Path) -> None:
         apply_schema(connection)
         apply_schema(connection)
 
-        assert EXPECTED_TABLES <= table_names(connection)
+        assert table_names(connection) >= EXPECTED_TABLES
     finally:
         connection.close()
 
@@ -208,7 +208,7 @@ def test_migrate_database_applies_fts_migration(database_connection):
     assert migrate_database(database_connection) == 2
     assert migrate_database(database_connection) == 2
 
-    assert FTS_TABLES <= table_names(database_connection)
+    assert table_names(database_connection) >= FTS_TABLES
 
 
 def test_fts_rebuild_indexes_existing_rows(database_connection):

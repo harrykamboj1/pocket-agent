@@ -3,9 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from pocket.db.connect import BUSY_TIMEOUT_MS, connect_database
+from pocket.db.connect import BUSY_TIMEOUT_MS, connect_database, transaction
 from pocket.paths import derive_paths, initialize_paths
-from pocket.db.connect import transaction
 
 
 def test_connect_database_configures_connection(tmp_path: Path) -> None:
@@ -96,13 +95,15 @@ def test_transaction_rolls_back_failed_work(tmp_path: Path) -> None:
             "CREATE TABLE items (id INTEGER PRIMARY KEY, name TEXT NOT NULL)"
         )
 
-        with pytest.raises(RuntimeError, match="force rollback"):
-            with transaction(connection):
-                connection.execute(
-                    "INSERT INTO items(name) VALUES(?)",
-                    ("must disappear",),
-                )
-                raise RuntimeError("force rollback")
+        with (
+            pytest.raises(RuntimeError, match="force rollback"),
+            transaction(connection),
+        ):
+            connection.execute(
+                "INSERT INTO items(name) VALUES(?)",
+                ("must disappear",),
+            )
+            raise RuntimeError("force rollback")
 
         count = connection.execute("SELECT COUNT(*) AS count FROM items").fetchone()
 
